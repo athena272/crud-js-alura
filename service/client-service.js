@@ -1,3 +1,5 @@
+const table = document.querySelector('[data-tabela')
+
 const createNewRow = (nome, email) => {
     const newRowClient = document.createElement('tr')
     const content = `
@@ -16,17 +18,30 @@ const createNewRow = (nome, email) => {
     return newRowClient
 }
 
-const table = document.querySelector('[data-tabela')
 
-const http = new XMLHttpRequest()
+const listClients = () => {
+    const promise = new Promise((resolve, reject) => {
+        const http = new XMLHttpRequest()
+        http.open('GET', 'http://localhost:3000/profile')
 
-http.open('GET', 'http://localhost:3000/profile')
+        http.onload = () => {
+            if (http.status >= 400) {
+                reject(JSON.parse(http.response))
 
-http.send()
+            } else {
+                resolve(JSON.parse(http.response))
+            }
+        }
 
-http.onload = () => {
-    const data = JSON.parse(http.response)
+        http.send()
+    })
+
+    return promise
+}
+
+listClients().then(data => {
+
     data.forEach(element => {
         table.appendChild(createNewRow(element.nome, element.email))
-    });
-}   
+    })
+})
