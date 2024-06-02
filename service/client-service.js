@@ -18,7 +18,6 @@ const createNewRow = (nome, email) => {
     return newRowClient
 }
 
-
 const listClients = async () => {
     try {
         const response = await fetch('https://athena272.github.io/crud-js-alura/db.json');
