@@ -19,29 +19,27 @@ const createNewRow = (nome, email) => {
 }
 
 
-const listClients = () => {
-    const promise = new Promise((resolve, reject) => {
-        const http = new XMLHttpRequest()
-        http.open('GET', 'http://localhost:3000/profile')
-
-        http.onload = () => {
-            if (http.status >= 400) {
-                reject(JSON.parse(http.response))
-
-            } else {
-                resolve(JSON.parse(http.response))
-            }
+const listClients = async () => {
+    try {
+        const response = await fetch('https://athena272.github.io/crud-js-alura/db.json');
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Failed to fetch data:', error);
+    }
+};
 
-        http.send()
-    })
-
-    return promise
+const fetchClients = async () => {
+    const data = await listClients()
+    if (data && data.profile) {
+        const { profile } = data;
+        profile.forEach(element => {
+            table.appendChild(createNewRow(element.nome, element.email));
+        });
+    }
 }
 
-listClients().then(data => {
-
-    data.forEach(element => {
-        table.appendChild(createNewRow(element.nome, element.email))
-    })
-})
+fetchClients()
